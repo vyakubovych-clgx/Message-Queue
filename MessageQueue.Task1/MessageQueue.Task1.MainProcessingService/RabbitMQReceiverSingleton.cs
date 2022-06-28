@@ -31,7 +31,7 @@ public class RabbitMQReceiverSingleton : RabbitMQSingleton<RabbitMQReceiverSingl
         var fileMessage = await BinarySerializer.DeserializeAsync<FileMessage>(body);
         var receivedMessage = (eventArgs.DeliveryTag, fileMessage);
 
-        TryAddMessageToDictionary(fileMessage, receivedMessage);
+        AddMessageToDictionary(fileMessage, receivedMessage);
         var currentFileChunks = _receivedChunks[fileMessage.FileId];
 
         if (ReceivedAllFileChunks(currentFileChunks, fileMessage))
@@ -49,7 +49,7 @@ public class RabbitMQReceiverSingleton : RabbitMQSingleton<RabbitMQReceiverSingl
         => chunkMessages.Count == fileMessage.TotalChunksAmount;
 
 
-    private void TryAddMessageToDictionary(FileMessage fileMessage, (ulong, FileMessage) receivedMessage)
+    private void AddMessageToDictionary(FileMessage fileMessage, (ulong, FileMessage) receivedMessage)
     {
         if (!_receivedChunks.TryAdd(fileMessage.FileId, new List<(ulong, FileMessage)> {receivedMessage}))
             _receivedChunks[fileMessage.FileId].Add(receivedMessage);
