@@ -61,8 +61,7 @@ public class RabbitMQReceiverSingleton : RabbitMQSingleton<RabbitMQReceiverSingl
             _channel.BasicAck(chunk.DeliveryTag, false);
     }
 
-    private static async Task CreateNewFile(string fileName,
-        List<(ulong DeliveryTag, FileMessage FileMessage)> chunkMessages)
+    private static async Task CreateNewFile(string fileName, List<(ulong, FileMessage FileMessage)> chunkMessages)
     {
         var fileBytes = chunkMessages.OrderBy(c => c.FileMessage.ChunkNumber)
             .SelectMany(c => c.FileMessage.Content)
