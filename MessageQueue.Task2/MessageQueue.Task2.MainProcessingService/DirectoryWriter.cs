@@ -1,6 +1,6 @@
-﻿using MessageQueue.Task1.Common.Infrastructure;
+﻿using MessageQueue.Task2.Common.Infrastructure;
 
-namespace MessageQueue.Task1.MainProcessingService;
+namespace MessageQueue.Task2.MainProcessingService;
 
 public class DirectoryWriter
 {

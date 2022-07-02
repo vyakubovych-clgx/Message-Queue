@@ -53,14 +53,15 @@ public class DirectoryWatcher : IDisposable
             for (var i = 0; i < 100; i++)
                 try
                 {
-                    var fileContent = await File.ReadAllBytesAsync(eventArgs.FullPath);
-                    await RabbitMQSenderSingleton.Instance.SendFileMessageChunks(fileName, fileContent);
+                    var fileContent = await File.ReadAllBytesAsync(eventArgs.FullPath).ConfigureAwait(false);
+                    await RabbitMQSenderSingleton.Instance.SendFileMessageChunksAsync(fileName, fileContent)
+                        .ConfigureAwait(false);
                     Console.WriteLine($"{fileName} was sent.");
                     return;
                 }
                 catch (IOException)
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                 }
 
             Console.WriteLine($"{fileName} - failed to send.");

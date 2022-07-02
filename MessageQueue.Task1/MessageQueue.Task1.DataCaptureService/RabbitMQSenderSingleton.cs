@@ -9,7 +9,7 @@ public class RabbitMQSenderSingleton : RabbitMQSingleton<RabbitMQSenderSingleton
 {
     private bool _disposed;
 
-    public async Task SendFileMessageChunks(string fileName, byte[] fileContent)
+    public async Task SendFileMessageChunksAsync(string fileName, byte[] fileContent)
     {
         var chunks = fileContent.Chunk(ConfigHelper.GetChunkSize()).ToList();
         var fileId = Guid.NewGuid();
@@ -23,7 +23,7 @@ public class RabbitMQSenderSingleton : RabbitMQSingleton<RabbitMQSenderSingleton
                 ChunkNumber = i,
                 TotalChunksAmount = chunks.Count
             };
-            var body = await BinarySerializer.SerializeAsync(fileMessage);
+            var body = await BinarySerializer.SerializeAsync(fileMessage).ConfigureAwait(false);
             using var channel = Connection.CreateModel();
             channel.BasicPublish(string.Empty, QueueName, null, body);
         }

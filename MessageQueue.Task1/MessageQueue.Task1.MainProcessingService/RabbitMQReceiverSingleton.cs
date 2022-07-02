@@ -28,7 +28,7 @@ public class RabbitMQReceiverSingleton : RabbitMQSingleton<RabbitMQReceiverSingl
     private async void ReceivedMessage(object sender, BasicDeliverEventArgs eventArgs)
     {
         var body = eventArgs.Body.ToArray();
-        var fileMessage = await BinarySerializer.DeserializeAsync<FileMessage>(body);
+        var fileMessage = await BinarySerializer.DeserializeAsync<FileMessage>(body).ConfigureAwait(false);
         var receivedMessage = (eventArgs.DeliveryTag, fileMessage);
 
         AddMessageToDictionary(fileMessage, receivedMessage);
@@ -36,7 +36,7 @@ public class RabbitMQReceiverSingleton : RabbitMQSingleton<RabbitMQReceiverSingl
 
         if (ReceivedAllFileChunks(currentFileChunks, fileMessage))
         {
-            await CreateNewFile(fileMessage.FileName, currentFileChunks);
+            await CreateNewFileAsync(fileMessage.FileName, currentFileChunks).ConfigureAwait(false);
             AcknowledgeChunkMessages(currentFileChunks);
 
             Console.WriteLine($"{fileMessage.FileName} was received.");
@@ -61,14 +61,14 @@ public class RabbitMQReceiverSingleton : RabbitMQSingleton<RabbitMQReceiverSingl
             _channel.BasicAck(chunk.DeliveryTag, false);
     }
 
-    private static async Task CreateNewFile(string fileName, List<(ulong, FileMessage FileMessage)> chunkMessages)
+    private static async Task CreateNewFileAsync(string fileName, List<(ulong, FileMessage FileMessage)> chunkMessages)
     {
         var fileBytes = chunkMessages.OrderBy(c => c.FileMessage.ChunkNumber)
             .SelectMany(c => c.FileMessage.Content)
             .ToArray();
 
         var directoryWriter = new DirectoryWriter();
-        await directoryWriter.CreateFileAsync(fileName, fileBytes);
+        await directoryWriter.CreateFileAsync(fileName, fileBytes).ConfigureAwait(false);
     }
 
     protected override void Dispose(bool disposing)
