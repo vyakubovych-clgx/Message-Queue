@@ -18,7 +18,7 @@ public class MainProcessingServiceWorker
     public async Task WorkAsync()
     {
         Console.WriteLine($"Enter \"{Constants.StatusCommand}\" to force all Data Capture Services to send their status.");
-        Console.WriteLine($"Enter \"{Constants.ConfigCommand}\" to force all Data Capture Services to send their status.");
+        Console.WriteLine($"Enter \"{Constants.ConfigCommand}\" to change parameters of Data Capture Services.");
         Console.WriteLine($"Enter \"{Constants.ExitCommand}\" to stop Main Processing Service.");
         while (true)
         {
@@ -73,6 +73,8 @@ public class MainProcessingServiceWorker
 
         var messageBytes = await BinarySerializer.SerializeAsync(message).ConfigureAwait(false);
         _commandSender.SendMessage(messageBytes);
+
+        Console.WriteLine("Change parameters command was sent successfully.");
     }
 
     private static int? ProcessUserInput()
