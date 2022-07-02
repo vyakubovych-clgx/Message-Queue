@@ -31,6 +31,7 @@ public class DataCaptureServiceWorker
         _statusSendingTimer = new Timer(async e => await SendStatusMessageAsync().ConfigureAwait(false), null,
             TimeSpan.Zero, TimeSpan.FromSeconds(_statusSendingInterval));
 
+        Console.WriteLine($"Service ID: {ServiceId}");
         Console.WriteLine("Press [enter] to exit.");
         Console.ReadLine();
     }
